@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using HtmlAgilityPack;
 
 namespace HttpNewsPAT_Cheremnykh
 {
@@ -81,6 +83,28 @@ namespace HttpNewsPAT_Cheremnykh
             // Читаем ответ
             string responseFromServer = new StreamReader(response.GetResponseStream()).ReadToEnd();
             Console.WriteLine(responseFromServer);
+        }
+        public static void ParsingHtml(string htmlCode)
+        {
+            var html = new HtmlDocument();
+            // Загружаем код страницы в объект HTML
+            html.LoadHtml(htmlCode);
+            // Получаем структуру страницы
+            var Document = html.DocumentNode;
+            // Получаем элементы по классу News
+            IEnumerable<HtmlNode> DivsNews = Document.Descendants().Where(n => n.HasClass("news"));
+            // Перебираем элементы
+            foreach (HtmlNode DivNews in DivsNews)
+            {
+                // Получаем SRC картинки
+                var src = DivNews.ChildNodes[1].GetAttributeValue("src", "none");
+                // Получаем наименование
+                var name = DivNews.ChildNodes[3].InnerText;
+                // Получаем описание
+                var description = DivNews.ChildNodes[5].InnerText;
+                // Выводим надпись
+                Console.WriteLine(name + "\n" + "Изображение: " + src + "\n" + "Описание: " + description + "\n");
+            }
         }
     }
 }
